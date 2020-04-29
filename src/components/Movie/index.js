@@ -5,9 +5,13 @@ import MovieService from '../../services/movieService';
 
 import Img from '../Img';
 import { Link } from "react-router-dom";
+import {useStoreContext} from '../../storeContext';
+
 
 const Movie = (props) => {
-    const [movie, setMovie] = useState(props.movie);
+	const [movie, setMovie] = useState(props.movie);
+	const {genres} = useStoreContext();
+
     useEffect( () => {
         if(props.movie) {
             setMovie(props.movie);
@@ -25,7 +29,7 @@ const Movie = (props) => {
         <div className="genres">
             { movie.genre_ids.map( (item, index) => {
                 const comma = index !== movie.genre_ids.length - 1; 
-                return <div key={index} className="genre">{item}{comma ? ',' : ''}</div>
+                return <div key={index} className="genre">{genres.find(x => x.id === item).name}{comma ? ',' : ''}</div>
             })}
         </div>
     </Container>

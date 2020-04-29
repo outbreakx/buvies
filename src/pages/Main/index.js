@@ -5,21 +5,27 @@ import {Container} from './styles';
 import Movies from '../../components/Movies';
 import MovieService from '../../services/movieService';
 
-const searchMovies = (text, filter, page) => {
-    if(text && text.length > 0) {
-        return MovieService.getSearch(text, page);
-    }
+import {useStoreContext} from '../../storeContext';
+
+
+const searchMovies = (text, filter, page, setSearchContent) => {
     switch(filter) {
         case 0: {
+			setSearchContent("");
             return MovieService.getPopular(page);
         }
         case 1: {
+			setSearchContent("");
             return MovieService.getTopRated(page);
         }
         case 2: {
+			setSearchContent("");
             return MovieService.getUpcoming(page);
-        }
-    }
+		}
+		case 4: {
+			return MovieService.getSearch(text, page);
+		}
+	}
 };
 
 const Main = (props) => {
@@ -28,31 +34,41 @@ const Main = (props) => {
         'Top Rated',
         'Upcoming'
     ];
-    const [filter,setFilter] = useState(0);
-    const [movies, setMovies] = useState();
+	const [movies, setMovies] = useState();
     const [currentPage, setCurrentPage] = useState(0);
-    const [endPage, setEndPage] = useState(0);
-    const [searchText, setSearchText] = useState();
+    const [endPage, setEndPage] = useState(0);	
+	const {setGenres, filter, setFilter, searchContent, setSearchContent} = useStoreContext();
 
     const onClick = (e, id) => {
         e.preventDefault();
         setFilter(id);
         setCurrentPage(0);
-        searchMovies(searchText, id, 1).then(data => {
+        searchMovies(searchContent, id, 1, setSearchContent).then(data => {
             setEndPage(data.total_pages);
             setMovies(data.results);
         });
-    }
+    };
     useEffect( () => {
-        searchMovies(searchText, filter, currentPage + 1).then(data => {
+        searchMovies(searchContent, filter, currentPage + 1, setSearchContent).then(data => {
             setEndPage(data.total_pages);
             setMovies(data.results);
-        });
+		});
+		
+		MovieService.getGenres().then( data => {
+			setGenres(data.genres);
+		});
     }, []);
-
+	useEffect( () => {
+		if(searchContent.length > 0) {
+			searchMovies(searchContent, 4, currentPage + 1, setSearchContent).then(data => {
+				setEndPage(data.total_pages);
+				setMovies(data.results);
+			});
+		}
+	}, [searchContent]);
     const onPage = (id) => {
         setCurrentPage(id);
-        searchMovies(searchText, filter, id + 1).then(data => {
+        searchMovies(searchContent, filter, id + 1, setSearchContent).then(data => {
             setMovies(data.results);
         });
     };

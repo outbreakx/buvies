@@ -68,6 +68,11 @@ const MovieService = {
                 return 'https://image.tmdb.org/t/p/original' + imageUrl;
             }
         }
-    }
+	},
+	getGenres: async () => {
+		return await api.get("/genre/movie/list").then( (res) => {
+			return res.data;
+		});
+	}
 };
 export default MovieService;

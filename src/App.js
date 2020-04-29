@@ -5,6 +5,8 @@ import {
 	Route,
 } from "react-router-dom";
 
+import {StoreProvider} from './storeContext';
+
 import GlobalStyle from './styles/global';
 
 import Main from './pages/Main';
@@ -15,14 +17,16 @@ import Footer from './components/Footer';
 import Movie from './pages/Movie';
 
 const App = () => {
-    return <Router>
-        <GlobalStyle/>
-        <Header/>
-        <Switch>
-            <Route path="/movie/:id" component={Movie} />
-            <Route path="/" component={Main} />
-        </Switch>
-        <Footer/>
-    </Router>
+    return <StoreProvider>
+		<Router>
+        	<GlobalStyle/>
+        	<Header/>
+        	<Switch>
+            	<Route path="/movie/:id" component={Movie} />
+            	<Route path="/" component={Main} />
+        	</Switch>
+        	<Footer/>
+    	</Router>
+	</StoreProvider>
 }
 export default App;
